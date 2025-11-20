@@ -64,4 +64,5 @@ def analyze_resume_with_llm(text):
             "raw_error": "Invalid JSON returned by model"
         }
 
+    # returning the actual data we get from the llm response in json format
     return data
