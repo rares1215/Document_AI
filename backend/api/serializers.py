@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser
+from .models import CustomUser,Resume,ResumeAnalysis
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -40,3 +40,24 @@ class CustomUserSerializer(serializers.ModelSerializer):
         validated_data.pop('password2')
         user = CustomUser.objects.create_user(**validated_data)
         return user
+    
+class ResumeSerializer(serializers.Serializer):
+    class Meta:
+        model = Resume
+        fields = ['id','user','doc_file','text','created_at']
+        read_only_fields = ['text','created_at']
+
+class ResumeAnalysisSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ResumeAnalysis
+        fields = [
+            "id",
+            "resume",
+            "skills",
+            "experience_summary",
+            "match_score",
+            "suggestions",
+            "raw_llm_response",
+            "created_at",
+        ]
+        read_only_fields = fields
