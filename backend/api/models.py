@@ -10,6 +10,7 @@ class CustomUser(AbstractUser):
 
 
 
+#### Created the resume model to store in our database when we upload the pdf ###
 class Resume(models.Model):
     id = models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
@@ -21,6 +22,8 @@ class Resume(models.Model):
         return f"Resume {self.id}"
 
 
+
+#### a separate entity for hte Resume called ResumeAnalysis that is focused more on the llm proccessing and response(it s OneToOne relationship but we are spliting it in two diffrent models to be more flexible) 
 class ResumeAnalysis(models.Model):
     id = models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
     resume = models.OneToOneField(Resume, on_delete=models.CASCADE, related_name='analysis')

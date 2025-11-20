@@ -41,12 +41,16 @@ class CustomUserSerializer(serializers.ModelSerializer):
         user = CustomUser.objects.create_user(**validated_data)
         return user
     
+
+### Serialzer for the Resume Model
 class ResumeSerializer(serializers.Serializer):
     class Meta:
         model = Resume
         fields = ['id','user','doc_file','text','created_at']
         read_only_fields = ['text','created_at']
 
+
+### Serializer for the ResumeAnalysis model
 class ResumeAnalysisSerializer(serializers.ModelSerializer):
     class Meta:
         model = ResumeAnalysis
