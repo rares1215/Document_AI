@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import CustomUser,Resume,ResumeAnalysis
+from .utils.get_hash_text import hash_text,extract_text_from_file
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -43,12 +44,31 @@ class CustomUserSerializer(serializers.ModelSerializer):
     
 
 ### Serialzer for the Resume Model
-class ResumeSerializer(serializers.Serializer):
+class ResumeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Resume
-        fields = ['id','user','doc_file','text','created_at']
-        read_only_fields = ['text','created_at']
+        fields = ['id', 'user', 'doc_file', 'text', 'created_at']
+        read_only_fields = ['user', 'text', 'created_at']
 
+    
+    #### checking if a resume is already in the system##
+    def validate(self, attrs):
+        ### getting the current file that we are uploading #
+        curr_file = attrs['doc_file']
+        if curr_file:
+            ### extracting the text from the file
+            curr_text = extract_text_from_file(curr_file)
+            ### hashing the text ###
+            hash_curr_text = hash_text(curr_text)
+
+            ## chech in db if the file already exists##
+            if Resume.objects.filter(text_hash=hash_curr_text).exists():
+                raise serializers.ValidationError(
+                    {"doc_file": "This Resume already exists."}
+                )
+            ## setting the text_hash atribute from the model to the hash_text of the current file if the file is not already in
+            attrs['text_hash'] = hash_curr_text
+        return attrs
 
 ### Serializer for the ResumeAnalysis model
 class ResumeAnalysisSerializer(serializers.ModelSerializer):
@@ -61,7 +81,7 @@ class ResumeAnalysisSerializer(serializers.ModelSerializer):
             "experience_summary",
             "match_score",
             "suggestions",
-            "raw_llm_response",
+            "raw_llm_res",
             "created_at",
         ]
         read_only_fields = fields

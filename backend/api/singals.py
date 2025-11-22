@@ -13,7 +13,7 @@ def generate_resume_analysis(sender,instance,created,**kwargs):
         return
 
     ### extract the text from the pdf
-    text = extract_text_from_pdf(instance.file.path)
+    text = extract_text_from_pdf(instance.doc_file.path)
     instance.text = text
     Resume.objects.filter(id=instance.id).update(text=text)
 
@@ -29,5 +29,5 @@ def generate_resume_analysis(sender,instance,created,**kwargs):
         experience_summary=ai_data.get("experience_summary", ""),
         match_score=ai_data.get("match_score", 0),
         suggestions=ai_data.get("suggestions", ""),
-        raw_llm_response=ai_data,
+        raw_llm_res=ai_data,
     )

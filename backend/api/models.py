@@ -15,6 +15,7 @@ class Resume(models.Model):
     id = models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
     doc_file = models.FileField(upload_to='resumes/')
+    text_hash = models.CharField(max_length=64,blank=True, db_index=True)
     text = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
