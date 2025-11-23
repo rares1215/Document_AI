@@ -18,7 +18,10 @@ urlpatterns = [
     ### Url for the register User ##
     path("api/register/", RegisterUserViewSet.as_view(), name='register_user'),
     path('api/', include('api.urls')),
+    path('silk/', include("silk.urls", namespace='silk')),  
 ]
+
+
 
 
 if settings.DEBUG:

@@ -80,6 +80,27 @@ class ResumeSerializer(serializers.ModelSerializer):
             ## setting the text_hash atribute from the model to the hash_text of the current file if the file is not already in
             attrs['text_hash'] = hash_curr_text
         return attrs
+    
+    ### We want to keep only 10 resumes and analyses for user in our data base so we don't populate it with ussles resumes that we are never gonna use again
+    def create(self, validated_data):
+        # get the logged in user from context
+        user = self.context['request'].user
+
+        ### get all the user analyses and order them by latest
+        analyses = ResumeAnalysis.objects.filter(resume__user = user).order_by("-created_at")
+
+        ### check if the user has more then 10 analyses
+        if analyses.count() >=10:
+            ### if it is then we are deleting the oldest resume from the db
+            oldest_analysis = analyses.last()
+            oldest_resume = oldest_analysis.resume
+            print(f"Deleting the oldes resume + analysis{oldest_resume.id}")
+            ## we are deleting only the resume because the analysis will be delete automatically by the cascading efect in our model
+            oldest_resume.delete()
+
+        resume = Resume.objects.create(**validated_data)
+        return resume
+
 
 ### Serializer for the ResumeAnalysis model
 class ResumeAnalysisSerializer(serializers.ModelSerializer):
