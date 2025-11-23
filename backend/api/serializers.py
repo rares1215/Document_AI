@@ -55,9 +55,20 @@ class ResumeSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         ### getting the current file that we are uploading #
         curr_file = attrs['doc_file']
+
+        MAX_SIZE = 5 *1024*1024 ### the maximum size we accept for a pdf file
+        ## check if the file is of valid size if not raise an error
+        if curr_file.size > MAX_SIZE:
+            raise serializers.ValidationError({"doc_file": f"The pdf file is to big (max:{MAX_SIZE // (1024 * 1024)} MB)"})
+
         if curr_file:
             ### extracting the text from the file
             curr_text = extract_text_from_file(curr_file)
+
+            ### check if the pdf is valid if not raise an error##
+            if not curr_text:
+                raise serializers.ValidationError({"doc_file": "the pdf file is corrupt or it can't be read."})
+            
             ### hashing the text ###
             hash_curr_text = hash_text(curr_text)
 

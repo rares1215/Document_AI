@@ -7,9 +7,9 @@ from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 
-router.register('resumes',RVS,basename='resumes')
 router.register('analysis',RAVS,basename='analysis')
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('resumes/', RVS.as_view(), name='upload_resume'),
+    path('', include(router.urls)),
 ]

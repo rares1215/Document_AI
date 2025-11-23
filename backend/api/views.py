@@ -5,6 +5,7 @@ from .serializers import CustomUserSerializer,ResumeSerializer,ResumeAnalysisSer
 from rest_framework.parsers import FormParser,MultiPartParser
 from .utils.cache_resumes import get_cached_analysis,set_analysis_in_cache
 from rest_framework.response import Response
+from .throttles import ResumeUploadThrotleBurst,ResumeUploadThrotleSustained
 
 # Create your views here.
 
@@ -19,22 +20,28 @@ class RegisterUserViewSet(generics.CreateAPIView):
 
 ### The resume view set use for adding and listing the resumes 
 
-class ResumeViewSet(viewsets.ModelViewSet):
+class ResumeViewSet(generics.CreateAPIView):
     queryset = Resume.objects.all().order_by("-created_at")
     serializer_class = ResumeSerializer
     permission_classes = [IsAuthenticated]
     parser_classes = [FormParser,MultiPartParser]
+    throttle_classes = [ResumeUploadThrotleBurst,ResumeUploadThrotleSustained]
 
     def perform_create(self, serializer):
         user = self.request.user
         return serializer.save(user=user)
+
     
     
 #### Resume analysis view set for listing and getting the analyze of the resume ####    
 class ResumeAnalyzerViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = ResumeAnalysis.objects.all()
     serializer_class = ResumeAnalysisSerializer
     permission_classes = [IsAuthenticated]
+
+    ### get only the logged in user analysis
+    def get_queryset(self):
+        user = self.request.user
+        return ResumeAnalysis.objects.filter(resume__user=user).order_by("-created_at")
 
     def retrieve(self, request, *args, **kwargs):
         resume_analysis = self.get_object()
@@ -46,6 +53,7 @@ class ResumeAnalyzerViewSet(viewsets.ReadOnlyModelViewSet):
             return Response(cached_data)
         
         ### If it s not in cache
+        print('CACHED MISSED: data is not in cache')
         serializer = self.get_serializer(resume_analysis)
 
         ## save the analysis in redis:
