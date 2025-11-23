@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "api",
     "silk",
+    'drf_spectacular',
     ## default apps ##
     "django.contrib.admin",
     "django.contrib.auth",
@@ -154,8 +155,57 @@ REST_FRAMEWORK = {
         ### custom rate for uploading files
         'resume_upload_burst': '2/minute',
         'resume_upload_sustained': '100/day',
-    }
+    },
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
+
+SPECTACULAR_SETTINGS = {
+    # ---------------------------------------------------------
+    # Basic API metadata
+    # ---------------------------------------------------------
+    'TITLE': 'Resume Analyzer API',
+    'DESCRIPTION': (
+        "A fast and scalable API for uploading resumes and generating AI-powered analyses. "
+        "Users can upload PDF resumes, which are automatically processed, validated, "
+        "deduplicated, and analyzed using a Large Language Model (LLM). "
+        "The API also supports caching, throttling, and secure access through JWT authentication."
+    ),
+    'VERSION': '1.0.0',
+
+    # Schema generation settings
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SCHEMA_PATH_PREFIX': r'/api',
+
+    # UI / formatting
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SCHEMA_COERCE_PATH_PK': True,
+    'SORT_OPERATIONS': True,
+    'SORT_OPERATION_PARAMETERS': True,
+
+    # Auth settings (for Swagger UI)
+    'AUTHENTICATION_WHITELIST': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'SERVE_AUTHENTICATION': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'POSTPROCESSING_HOOKS': ['drf_spectacular.hooks.postprocess_schema_enums'],
+    'ENUM_NAME_OVERRIDES': {},
+    # Custom UI options
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+        'displayOperationId': True,
+        'defaultModelsExpandDepth': 0,
+        'defaultModelExpandDepth': 0,
+        'persistAuthorization': True,
+        'filter': True,
+        'tryItOutEnabled': True,
+    },
+    'DISABLE_ERRORS_AND_WARNINGS': False,
+    'SERVE_PERMISSIONS': ['rest_framework.permissions.AllowAny'],
+}
+
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=120),
