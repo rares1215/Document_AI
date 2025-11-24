@@ -6,6 +6,7 @@ from rest_framework.parsers import FormParser,MultiPartParser
 from .utils.cache_resumes import get_cached_analysis,set_analysis_in_cache
 from rest_framework.response import Response
 from .throttles import ResumeUploadThrotleBurst,ResumeUploadThrotleSustained
+from rest_framework.decorators import action
 
 # Create your views here.
 
@@ -60,3 +61,26 @@ class ResumeAnalyzerViewSet(viewsets.ReadOnlyModelViewSet):
         set_analysis_in_cache(resume_analysis.id,serializer.data)
 
         return Response(serializer.data)
+    
+
+    ### end-point to get the latest analysis
+    @action(detail=False,
+            methods=['get'],
+            url_path='latest',
+            url_name='latest-analysis')
+    def get_latest_analysis(self,request):
+        user = self.request.user
+        latest = ResumeAnalysis.objects.filter(resume__user=user).order_by("-created_at").first()
+        if not latest:
+            return Response({"detail": "No analyses yet."}, status=404)
+        
+        cached_data = get_cached_analysis(latest.id)
+
+        if cached_data:
+            print('CACHED HIT, retriving data from cache')
+            return Response(cached_data)
+        
+        print('CACHED MISSED: data is not in cache')
+        serialzier = self.get_serializer(latest)
+        set_analysis_in_cache(latest.id,serialzier.data)
+        return Response(serialzier.data)
