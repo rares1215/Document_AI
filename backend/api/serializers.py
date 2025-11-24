@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import CustomUser,Resume,ResumeAnalysis
 from .utils.get_hash_text import hash_text,extract_text_from_file
+import re
+
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -51,7 +53,8 @@ class ResumeSerializer(serializers.ModelSerializer):
         read_only_fields = ['user', 'text', 'created_at']
 
     
-    #### checking if a resume is already in the system##
+    #### validation logic for when we upload the resume.
+
     def validate(self, attrs):
         ### getting the current file that we are uploading #
         curr_file = attrs['doc_file']
@@ -69,10 +72,25 @@ class ResumeSerializer(serializers.ModelSerializer):
             if not curr_text:
                 raise serializers.ValidationError({"doc_file": "the pdf file is corrupt or it can't be read."})
             
+            ### check if the pdf is a valid resume format using regular expresions if not raise an error
+            cv_keywords = [
+            r"experience", r"work history", r"employment",
+            r"education", r"studies", r"university",
+            r"skills", r"technologies",
+            r"projects", r"personal projects"
+            ]
+
+            matches = sum(1 for kw in cv_keywords if re.search(kw, curr_text, re.IGNORECASE))
+
+            if matches < 2:
+                raise serializers.ValidationError({
+                " doc_file": "This PDF does not appear to be a valid CV format."
+            })
+            
             ### hashing the text ###
             hash_curr_text = hash_text(curr_text)
 
-            ## chech in db if the file already exists##
+            ## chech in db if the file already exists if it does raise an error##
             if Resume.objects.filter(text_hash=hash_curr_text).exists():
                 raise serializers.ValidationError(
                     {"doc_file": "This Resume already exists."}
