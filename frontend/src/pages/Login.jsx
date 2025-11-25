@@ -20,7 +20,7 @@ export const Login = () => {
             if (res.status === 200) {
                 localStorage.setItem(ACCESS_TOKEN, res.data.access);
                 localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
-                navigate("/upload_resume/");
+                navigate("/upload_file/");
             }
         } catch (err) {
             setError("Invalid username or password.");

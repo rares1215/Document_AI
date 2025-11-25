@@ -5,6 +5,7 @@ import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { UploadResume } from './pages/UploadResume';
 import { Home } from './pages/Home';
+import { LatestAnalysis } from './pages/LatestAnalysis';
 
 
 
@@ -24,6 +25,12 @@ function App() {
         path='/upload_file/'
         element={
           <ProtectedRoute children={<UploadResume />}/>
+        }
+        />
+        <Route 
+        path='/analysis/latest/'
+        element={
+          <ProtectedRoute children={<LatestAnalysis />}/>
         }
         />
       </Routes>

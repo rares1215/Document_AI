@@ -30,7 +30,7 @@ def generate_resume_analysis(sender,instance,created,**kwargs):
         skills=ai_data.get("skills", []),
         experience_summary=ai_data.get("experience_summary", ""),
         match_score=ai_data.get("match_score", 0),
-        suggestions=ai_data.get("suggestions", ""),
+        suggestions=ai_data.get("suggestions", []),
         raw_llm_res=ai_data,
     )
 

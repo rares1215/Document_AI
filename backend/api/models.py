@@ -31,7 +31,7 @@ class ResumeAnalysis(models.Model):
     skills = models.JSONField(default=dict)
     experience_summary = models.TextField(blank=True)
     match_score = models.PositiveIntegerField(default=0)
-    suggestions = models.TextField(blank=True)
+    suggestions = models.JSONField(default=list)
     raw_llm_res = models.JSONField(default=dict)
     created_at = models.DateTimeField(auto_now_add=True)
 
