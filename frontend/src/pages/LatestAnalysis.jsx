@@ -43,7 +43,7 @@ export const LatestAnalysis = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto mt-20 p-6 bg-white shadow-lg rounded-xl border border-gray-200">
+    <div className="max-w-4xl mx-auto mt-30 mb-10 p-6 bg-white shadow-lg rounded-xl border border-gray-200">
 
       {/* HEADER */}
       <div className="border-b pb-4 mb-6">

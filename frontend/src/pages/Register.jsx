@@ -1,21 +1,23 @@
 import { useState } from "react";
 import api from "../api";
 import { Link, useNavigate } from "react-router-dom";
-
+import { LoadingSpinner } from "../components/LoadingSpinner";
 
 export const Register = () => {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
-
-  const navigate = useNavigate();
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const configRegister = async (e) => {
     e.preventDefault();
     setError(null);
+    setLoading(true);
 
     try {
       const res = await api.post("api/register/", {
@@ -25,23 +27,22 @@ export const Register = () => {
         password2,
       });
 
-      if (res.status === 201 || res.status === 200) {
+      if (res.status === 200 || res.status === 201) {
         setSuccess(true);
-        navigate("/login/");
-        setEmail("");
-        setUsername("");
-        setPassword("");
-        setPassword2("");
+
+        setTimeout(() => {
+          navigate("/login/");
+        }, 1200);
       }
     } catch (err) {
       const data = err.response?.data;
       let msg = "Registration failed.";
 
-      if (data) {
-        msg = Object.values(data)[0];
-      }
+      if (data) msg = Object.values(data)[0];
 
       setError(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,10 +53,6 @@ export const Register = () => {
           Create Account
         </h2>
 
-        <p className="text-gray-400 text-center mb-8 text-sm">
-          Upload your resume and get AI-powered feedback.
-        </p>
-
         {error && (
           <div className="mb-4 p-3 rounded bg-red-900/40 border border-red-700 text-red-300 text-sm">
             {error}
@@ -64,11 +61,12 @@ export const Register = () => {
 
         {success && (
           <div className="mb-4 p-3 rounded bg-green-900/40 border border-green-700 text-green-300 text-sm">
-            Your account has been created. You can now log in.
+            Your account has been created. Redirecting...
           </div>
         )}
 
         <form onSubmit={configRegister} className="space-y-5" autoComplete="off">
+
           {/* Email */}
           <div>
             <label className="text-sm text-gray-300">Email</label>
@@ -105,7 +103,7 @@ export const Register = () => {
             />
           </div>
 
-          {/* Confirm password */}
+          {/* Confirm Password */}
           <div>
             <label className="text-sm text-gray-300">Confirm Password</label>
             <input
@@ -117,12 +115,17 @@ export const Register = () => {
             />
           </div>
 
+          {/* Loading Spinner */}
+          {loading && <LoadingSpinner />}
+
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition"
+            disabled={loading}
+            className={`w-full py-2 rounded-lg font-medium transition
+              ${loading ? "bg-gray-600 text-gray-300" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
           >
-            Register
+            {loading ? "Creating account..." : "Register"}
           </button>
         </form>
 

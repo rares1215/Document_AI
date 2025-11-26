@@ -25,10 +25,13 @@ export const History = () => {
         getAnalyses();
     }, []);
 
-    if (loading)
-        return (
-            <LoadingSpinner />
-        );
+  if (loading) {
+    return (
+      <div className="mt-30">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
     return (
         <div className="max-w-3xl mx-auto mt-30 px-4">

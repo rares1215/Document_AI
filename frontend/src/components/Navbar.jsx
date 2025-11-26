@@ -29,7 +29,7 @@ export const Navbar = () => {
 
             <Link
               to="/"
-              className="text-gray-600 hover:text-blue-600 transition"
+              className="text-gray-100 hover:text-blue-600 transition"
             >
               Home
             </Link>
@@ -38,21 +38,21 @@ export const Navbar = () => {
               <>
                 <Link
                   to="/upload_file/"
-                  className="text-gray-600 hover:text-blue-600 transition"
+                  className="text-gray-100 hover:text-blue-600 transition"
                 >
                   Upload Resume
                 </Link>
 
                 <Link
                   to="/analyses/"
-                  className="text-gray-600 hover:text-blue-600 transition"
+                  className="text-gray-100 hover:text-blue-600 transition"
                 >
                   My Analyses
                 </Link>
                 
                 <Link
                   to="/analysis/latest/"
-                  className="text-gray-600 hover:text-blue-600 transition"
+                  className="text-gray-100 hover:text-blue-600 transition"
                 >
                   Most Recent Analysis
                 </Link>
@@ -63,7 +63,7 @@ export const Navbar = () => {
               <>
                 <Link
                   to="/login/"
-                  className="text-gray-600 hover:text-blue-600 transition"
+                  className="text-gray-100 hover:text-blue-600 transition"
                 >
                   Login
                 </Link>

@@ -1,22 +1,25 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import api from "../api";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
-import { Link } from "react-router-dom";
+import { LoadingSpinner } from "../components/LoadingSpinner";
 
 export const Login = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
 
     const configLogin = async (e) => {
         e.preventDefault();
         setError("");
+        setLoading(true);
 
         try {
             const res = await api.post("api/token/", { username, password });
+
             if (res.status === 200) {
                 localStorage.setItem(ACCESS_TOKEN, res.data.access);
                 localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
@@ -25,6 +28,8 @@ export const Login = () => {
         } catch (err) {
             setError("Invalid username or password.");
             console.log(err);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -35,14 +40,10 @@ export const Login = () => {
                 className="w-full max-w-md bg-gray-900 p-8 rounded-xl shadow-lg border border-gray-800"
                 autoComplete="off"
             >
-                <h1 className="text-3xl font-bold text-center mb-6 text-white">
-                    Login
-                </h1>
+                <h1 className="text-3xl font-bold text-center mb-6 text-white">Login</h1>
 
                 {error && (
-                    <p className="text-red-500 text-sm mb-4 text-center">
-                        {error}
-                    </p>
+                    <p className="text-red-500 text-sm mb-4 text-center">{error}</p>
                 )}
 
                 {/* Username */}
@@ -71,19 +72,24 @@ export const Login = () => {
                     />
                 </div>
 
+                {/* Loading Spinner */}
+                {loading && <LoadingSpinner />}
+
                 {/* Submit Button */}
                 <button
                     type="submit"
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-all font-semibold"
+                    disabled={loading}
+                    className={`w-full py-2 rounded-lg font-semibold transition-all 
+                        ${loading ? "bg-gray-600 text-gray-300" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
                 >
-                    Login
+                    {loading ? "Logging in..." : "Login"}
                 </button>
 
                 <p className="text-gray-400 text-center text-sm mt-4">
                     Don't have an account?{" "}
-                <Link to="/register/" className="text-blue-400 hover:underline">
-                    Register
-                </Link>
+                    <Link to="/register/" className="text-blue-400 hover:underline">
+                        Register
+                    </Link>
                 </p>
             </form>
         </div>
