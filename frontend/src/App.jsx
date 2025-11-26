@@ -6,6 +6,8 @@ import { Register } from './pages/Register';
 import { UploadResume } from './pages/UploadResume';
 import { Home } from './pages/Home';
 import { LatestAnalysis } from './pages/LatestAnalysis';
+import { History } from './pages/History';
+import { SingleAnalysis } from './pages/SingleAnalysis';
 
 
 
@@ -31,6 +33,18 @@ function App() {
         path='/analysis/latest/'
         element={
           <ProtectedRoute children={<LatestAnalysis />}/>
+        }
+        />
+        <Route 
+        path='/analyses/'
+        element={
+          <ProtectedRoute children={<History />}/>
+        }
+        />
+        <Route 
+        path='/analysis/:id/'
+        element={
+          <ProtectedRoute children={<SingleAnalysis />}/>
         }
         />
       </Routes>

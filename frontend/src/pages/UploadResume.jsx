@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
+import LoadingScreen from "../components/LoadingScreen";
 
 export const UploadResume = () => {
     const [docFile, setDocFile] = useState(null);
@@ -28,16 +29,13 @@ export const UploadResume = () => {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 
-            if (res.status === 201 || res.status === 200) {
-                setTimeout(() => {
-                    navigate("/analysis/latest/");
-                }, 1500); // small loading delay
+            if (res.status === 200 || res.status === 201) {
+                setTimeout(() => navigate("/analysis/latest"), 1500);
             }
         } catch (err) {
             console.log(err);
 
             if (err.response?.data) {
-                // extract readable error
                 const serverError = err.response.data.doc_file;
                 if (serverError) {
                     setError(serverError);
@@ -47,15 +45,19 @@ export const UploadResume = () => {
             } else {
                 setError("Server unreachable.");
             }
-        } finally {
-            setLoading(false);
+
+            setLoading(false); // IMPORTANT: doar în caz de eroare
         }
     };
 
     const handleFileChange = (e) => {
         setDocFile(e.target.files[0]);
-        setError(null); // clear error on new selection
+        setError(null);
     };
+
+    if (loading) {
+        return <LoadingScreen message="Processing your resume..." />;
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
@@ -64,9 +66,9 @@ export const UploadResume = () => {
                 <h1 className="text-2xl font-bold mb-6 text-center">
                     Upload Your Resume
                 </h1>
+                <p className="mb-6 text-gray-400">Please Note that the resume should be written in english</p>
 
                 <form onSubmit={UploadFile}>
-
                     {/* File Input */}
                     <input
                         type="file"
@@ -85,20 +87,12 @@ export const UploadResume = () => {
                     {/* Submit Button */}
                     <button
                         type="submit"
-                        disabled={loading}
-                        className={`w-full py-3 rounded-lg text-white font-semibold transition 
-                        ${loading ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"}`}
+                        className="w-full py-3 rounded-lg text-white font-semibold bg-blue-600 hover:bg-blue-700 transition"
                     >
-                        {loading ? "Uploading..." : "Upload Resume"}
+                        Upload Resume
                     </button>
                 </form>
 
-                {/* Loading Spinner */}
-                {loading && (
-                    <div className="flex justify-center mt-4">
-                        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
-                    </div>
-                )}
             </div>
         </div>
     );

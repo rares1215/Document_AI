@@ -44,10 +44,17 @@ export const Navbar = () => {
                 </Link>
 
                 <Link
-                  to="/analysis/"
+                  to="/analyses/"
                   className="text-gray-600 hover:text-blue-600 transition"
                 >
                   My Analyses
+                </Link>
+                
+                <Link
+                  to="/analysis/latest/"
+                  className="text-gray-600 hover:text-blue-600 transition"
+                >
+                  Most Recent Analysis
                 </Link>
               </>
             )}
